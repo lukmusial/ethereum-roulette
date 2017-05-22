@@ -14,9 +14,10 @@ contract MoneyBack {
     }
 
     function multiplex(address[] addresses) payable {
-        uint dividedAmount = 10000; //msg.value / addresses.length;
-        for (uint i = 0; i < addresses.length; i++)
+        uint dividedAmount = msg.value / addresses.length;
+        for (uint i = 0; i < addresses.length; i++) {
             balances[addresses[i]] += dividedAmount;
+        }
 
     }
 
