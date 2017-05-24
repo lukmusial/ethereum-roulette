@@ -1,24 +1,24 @@
-pragma solidity ^0.4.4;
+pragma solidity ^0.4.10;
 
-
-// idea is to just send the money to yourself (can you do that?)
-// TODO: ability to split transaction into x substransactions
-// TODO: add money to contract only to collect on explicit call?
 contract MoneyBack {
     mapping (address => uint) balances;
     uint fraction;
 
+    modifier nonEmptyOrRefund(uint len) {
+        if (len > 0) {
+            _;
+        } else if(!msg.sender.send(msg.value)) throw;
+    }
+
     function moneyBack(uint amount) returns (bool) {
-        //transfer throws, send returns bool
         return msg.sender.send(amount);
     }
 
-    function multiplex(address[] addresses) payable {
+    function multiplex(address[] addresses) nonEmptyOrRefund(addresses.length) payable {
         uint dividedAmount = msg.value / addresses.length;
         for (uint i = 0; i < addresses.length; i++) {
             balances[addresses[i]] += dividedAmount;
         }
-
     }
 
     function withdraw() {
